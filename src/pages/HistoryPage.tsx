@@ -1,4 +1,5 @@
-import React from "react";
+// แก้ไขไฟล์ HomePage.tsx
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ChargerStatus from "../components/home/ChargerStatus";
 import QuickRegistration from "../components/home/QuickRegistration";
@@ -20,6 +21,18 @@ const HomePage: React.FC<HomePageProps> = ({
   onRegister,
   onTopUp,
 }) => {
+  // เพิ่ม state เพื่อจัดการสถานะ checkbox (จะใช้สำหรับการสาธิต)
+  const [isRegisteredDemo, setIsRegisteredDemo] = useState<boolean>(
+    user.isRegistered
+  );
+
+  // ฟังก์ชันที่จะเรียกเมื่อ checkbox มีการเปลี่ยนแปลง
+  const handleRegistrationDemoChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setIsRegisteredDemo(e.target.checked);
+  };
+
   return (
     <>
       {/* Header */}
@@ -69,6 +82,34 @@ const HomePage: React.FC<HomePageProps> = ({
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          {/* เพิ่ม checkbox สำหรับสาธิตสถานะการลงทะเบียน */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginRight: "8px",
+            }}
+          >
+            <input
+              type="checkbox"
+              id="registrationDemo"
+              checked={isRegisteredDemo}
+              onChange={handleRegistrationDemoChange}
+              style={{ cursor: "pointer", width: "16px", height: "16px" }}
+            />
+            <label
+              htmlFor="registrationDemo"
+              style={{
+                fontSize: "12px",
+                marginLeft: "4px",
+                color: "#666",
+                cursor: "pointer",
+              }}
+            >
+              ลงทะเบียนแล้ว
+            </label>
+          </div>
+
           <div style={{ width: "24px", height: "24px", color: "#666" }}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -90,8 +131,19 @@ const HomePage: React.FC<HomePageProps> = ({
       <div style={{ padding: "0 0 20px 0" }}>
         <ChargerStatus chargerInfo={chargerInfo} />
 
-        {!user.isRegistered ? (
-          <QuickRegistration onRegister={onRegister} />
+        {/* วิธีใช้งานง่ายๆ (ย้ายขึ้นมาก่อน) */}
+        {/* ส่งค่า isRegistered ให้กับ StepsGuide ด้วย */}
+        <StepsGuide isRegistered={isRegisteredDemo} />
+
+        {/* ส่วนลงทะเบียน/เติมเงิน/เริ่มชาร์จ (ย้ายลงมาอยู่ด้านล่าง) */}
+        {/* แก้เงื่อนไขให้ใช้ isRegisteredDemo แทน user.isRegistered */}
+        {!isRegisteredDemo ? (
+          <QuickRegistration
+            onRegister={(phoneNumber) => {
+              onRegister(phoneNumber);
+              setIsRegisteredDemo(true); // อัปเดต state เมื่อลงทะเบียนสำเร็จ
+            }}
+          />
         ) : user.balance <= 0 ? (
           <InitialTopup onTopUp={onTopUp} />
         ) : (
@@ -100,9 +152,6 @@ const HomePage: React.FC<HomePageProps> = ({
             userBalance={user.balance}
           />
         )}
-
-        {/* วิธีใช้งานง่ายๆ */}
-        <StepsGuide />
 
         {/* ส่วนการเชื่อมต่อ */}
         <div
