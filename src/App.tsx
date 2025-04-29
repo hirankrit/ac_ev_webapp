@@ -1,0 +1,127 @@
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import HistoryPage from "./pages/HistoryPage";
+import ScanPage from "./pages/ScanPage";
+import WalletPage from "./pages/WalletPage";
+import ProfilePage from "./pages/ProfilePage";
+import BottomNavigation from "./components/layout/BottomNavigation";
+import "./styles.css";
+
+// Mock data สำหรับการทดสอบ
+const mockUser = {
+  balance: 0,
+  isRegistered: false,
+};
+
+const mockChargerInfo = {
+  id: "A001",
+  name: "เครื่องชาร์จ A001",
+  location: "อาคารจอดรถมหาวิทยาลัย ABC",
+  status: "available",
+  chargerType: "Type 2",
+  maxPower: 22,
+  pricePerUnit: 5,
+};
+
+export default function App() {
+  const [user, setUser] = React.useState(mockUser);
+  const [chargerInfo, setChargerInfo] = React.useState(mockChargerInfo);
+
+  // ฟังก์ชันสำหรับการลงทะเบียนผู้ใช้
+  const registerUser = (phoneNumber: string) => {
+    setUser({
+      ...user,
+      phoneNumber,
+      isRegistered: true,
+    });
+  };
+
+  // ฟังก์ชันสำหรับเติมเงิน
+  const topUp = (amount: number) => {
+    setUser({
+      ...user,
+      balance: user.balance + amount,
+    });
+  };
+
+  return (
+    <div
+      className="App"
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        backgroundColor: "#f5f5f5",
+        padding: "20px",
+      }}
+    >
+      <Router>
+        <div
+          style={{
+            width: "360px",
+            height: "740px",
+            borderRadius: "24px",
+            overflow: "hidden",
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "#ffffff",
+            boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
+            maxWidth: "100%",
+            maxHeight: "100%",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+              overflow: "hidden",
+            }}
+          >
+            <div style={{ flex: 1, overflow: "auto" }}>
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <HomePage
+                      user={user}
+                      chargerInfo={chargerInfo}
+                      onRegister={registerUser}
+                      onTopUp={topUp}
+                    />
+                  }
+                />
+                <Route path="/history" element={<HistoryPage />} />
+                <Route path="/scan" element={<ScanPage />} />
+                <Route
+                  path="/wallet"
+                  element={<WalletPage user={user} onTopUp={topUp} />}
+                />
+                <Route path="/profile" element={<ProfilePage user={user} />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </div>
+
+            {/* Footer with Navigation Bar */}
+            <footer
+              style={{
+                borderTop: "1px solid #eeeeee",
+                backgroundColor: "white",
+              }}
+            >
+              <BottomNavigation />
+            </footer>
+          </div>
+        </div>
+      </Router>
+    </div>
+  );
+}
