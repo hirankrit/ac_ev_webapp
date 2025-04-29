@@ -25,7 +25,7 @@ const mockChargerInfo: ChargerInfo = {
   id: "A001",
   name: "เครื่องชาร์จ A001",
   location: "อาคารจอดรถมหาวิทยาลัย ABC",
-  status: "available", // อัปเดตเป็น literal type: 'available' | 'in-use' | 'maintenance'
+  status: "available",
   chargerType: "Type 2",
   maxPower: 22,
   pricePerUnit: 5,
@@ -52,7 +52,7 @@ export default function App() {
     });
   };
 
-  // สร้าง mock props สำหรับหน้าที่ยังไม่ได้พัฒนา
+  // สร้าง props สำหรับหน้าที่ต้องการข้อมูลเดียวกัน
   const historyPageProps = {
     user,
     chargerInfo,
@@ -109,11 +109,14 @@ export default function App() {
                     />
                   }
                 />
+                {/* แก้ไขส่วน Route ของหน้าประวัติ - ให้ส่ง props ที่ถูกต้อง */}
                 <Route
                   path="/history"
                   element={<HistoryPage {...historyPageProps} />}
                 />
                 <Route path="/scan" element={<ScanPage />} />
+                {/* แก้ไขส่วน Route ของหน้าชาร์จ - ซึ่งไม่มีไฟล์ ChargingPage */}
+                <Route path="/charging" element={<div>Charging Page</div>} />
                 <Route
                   path="/wallet"
                   element={<WalletPage user={user} onTopUp={topUp} />}
