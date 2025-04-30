@@ -41,3 +41,19 @@ export interface TopupTransaction {
   amount: number;
   status: string;
 }
+
+export interface HomePageProps {
+  user: User;
+  chargerInfo: ChargerInfo;
+  onRegister: (phoneNumber: string) => void;
+  onTopUp: (amount: number) => void;
+}
+
+export interface WalletPageProps {
+  user: User;
+  onTopUp: (amount: number) => void;
+}
+
+export interface ProfilePageProps {
+  user: User;
+}

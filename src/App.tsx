@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,15 +11,17 @@ import ScanPage from "./pages/ScanPage";
 import WalletPage from "./pages/WalletPage";
 import ProfilePage from "./pages/ProfilePage";
 import BottomNavigation from "./components/layout/BottomNavigation";
+import { User, ChargerInfo } from "./types";
 import "./styles.css";
 
 // Mock data สำหรับการทดสอบ
-const mockUser = {
+const mockUser: User = {
   balance: 0,
   isRegistered: false,
+  phoneNumber: undefined,
 };
 
-const mockChargerInfo = {
+const mockChargerInfo: ChargerInfo = {
   id: "A001",
   name: "เครื่องชาร์จ A001",
   location: "อาคารจอดรถมหาวิทยาลัย ABC",
@@ -30,8 +32,8 @@ const mockChargerInfo = {
 };
 
 export default function App() {
-  const [user, setUser] = React.useState(mockUser);
-  const [chargerInfo, setChargerInfo] = React.useState(mockChargerInfo);
+  const [user, setUser] = useState<User>(mockUser);
+  const [chargerInfo, setChargerInfo] = useState<ChargerInfo>(mockChargerInfo);
 
   // ฟังก์ชันสำหรับการลงทะเบียนผู้ใช้
   const registerUser = (phoneNumber: string) => {
@@ -48,6 +50,14 @@ export default function App() {
       ...user,
       balance: user.balance + amount,
     });
+  };
+
+  // สร้าง props สำหรับหน้าที่ต้องการข้อมูลเดียวกัน
+  const historyPageProps = {
+    user,
+    chargerInfo,
+    onRegister: registerUser,
+    onTopUp: topUp,
   };
 
   return (
@@ -99,8 +109,14 @@ export default function App() {
                     />
                   }
                 />
-                <Route path="/history" element={<HistoryPage />} />
+                {/* แก้ไขส่วน Route ของหน้าประวัติ - ให้ส่ง props ที่ถูกต้อง */}
+                <Route
+                  path="/history"
+                  element={<HistoryPage {...historyPageProps} />}
+                />
                 <Route path="/scan" element={<ScanPage />} />
+                {/* แก้ไขส่วน Route ของหน้าชาร์จ - ซึ่งไม่มีไฟล์ ChargingPage */}
+                <Route path="/charging" element={<div>Charging Page</div>} />
                 <Route
                   path="/wallet"
                   element={<WalletPage user={user} onTopUp={topUp} />}
